@@ -1,0 +1,468 @@
+`<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Store</title>
+
+<style>
+body{
+    margin: 0;
+    font-family: 'Times New Roman', Times, serif;
+    background: #0a0f1c;
+    color: white;
+}
+
+header{
+    background: #111827;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin:0 10px;
+}
+
+.search{
+    padding:8px;
+    border:none;
+    border-radius:5px;
+}
+
+.container{
+    padding:30px;
+}
+
+.games{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+
+.game{
+    background:#111827;
+    border-radius:10px;
+    padding:15px;
+    transition:0.3s;
+}
+
+.game:hover{
+    transform:scale(1.05);
+}
+
+.game img{
+    width:100%;
+    border-radius:10px;
+}
+
+button{
+    margin-top:10px;
+    padding:8px 12px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+footer{
+    margin-top:40px;
+    padding:20px;
+    background:#111827;
+    text-align:center;
+}
+
+/* окно 18+ */
+
+#disclaimer{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.9);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+#disclaimerContent{
+    background:#111827;
+    padding:30px;
+    border-radius:10px;
+    text-align:center;
+}
+
+/* светлая тема */
+
+.light{
+    background:white;
+    color:black;
+}
+
+.light header{
+    background:#e5e7eb;
+}
+
+.light .game{
+    background:#f3f4f6;
+}
+.game{
+    opacity: 0;
+    transform: translateY(20px);
+    animation:show 0.6s forwards;
+}
+@keyframes show{
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+.game:hover{
+transform:scale(1.05);
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+.description{
+display:none;
+margin-top:10px;
+font-size:14px;
+color:#ccc;
+}
+#comments{
+    margin-top: 20px;
+}
+.comment{
+    background: #111827;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top:10px;
+}
+#cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    z-index: 1000;
+}
+
+#cookie-banner button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#cookie-banner button:hover {
+    background: #45a049;
+}
+.rating span{
+font-size:20px;
+cursor:pointer;
+color:gray;
+}
+
+.rating span.active{
+color:gold;
+}
+html{
+scroll-behavior: smooth;
+}
+#topBtn{
+position:fixed;
+bottom:30px;
+right:30px;
+padding:10px 15px;
+font-size:18px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:8px;
+cursor:pointer;
+display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="disclaimer">
+<div id="disclaimerContent">
+<h2>Внимание!</h2>
+<p>Этот сайт содержит контент, предназначенный только для пользователей старше 18 лет.</p>
+<p>Нажимая "Я согласен", вы подтверждаете, что достигли совершеннолетия.</p>
+<button onclick="acceptDisclaimer()">Я согласен</button>
+</div>
+</div>
+
+<header>
+
+<div class="logo">GameHub</div>
+
+<button onclick="toggleTheme()">Сменить тему</button>
+
+<button onclick="setLang('ru')">RU</button>
+<button onclick="setLang('en')">EN</button>
+
+<nav>
+<a href="#">Главная</a>
+<a href="#">Игры</a>
+<a href="#">Популярное</a>
+<input class="search" id="search" placeholder="Поиск игры...">
+</nav>
+
+</header>
+
+<div class="container">
+
+<h2>Популярные игры</h2>
+<h2>Комментарии</h2>
+
+<input id="commentInput" placeholder="Написать комментарий...">
+<button onclick="addComment()">Отправить</button>
+
+<div id="comments"></div>
+
+<div class="games" id="games">
+
+<div class="game" data-name="minecraft">
+<img src="https://avatars.mds.yandex.net/i?id=73e5917d2a675466cfcb10d8a9eab282_l-7451997-images-thumbs&n=13">
+<h3>Minecraft</h3>
+<p>Песочница с открытым миром</p>
+<button onclick="fav('Minecraft')">⭐ В избранное</button>
+<button onclick="like(this)">👍 <span class="likes">0</span></button>
+<button onclick="buy('Minecraft')">Купить</button>
+<button onclick="toggleDesc(this)">Описание</button>
+<p class="price">$15.99</p>
+<div class="description">
+Minecraft — это игра-песочница, где игрок может строить, добывать ресурсы,
+исследовать мир и сражаться с мобами.
+</div>
+</div>
+
+<div class="game" data-name="gta sa">
+<img src="https://www.old-games.ru/games/pc/grand_theft_auto_san_andreas/covers/largecover/12769_68975017a7c2d.jpg">
+<h3>GTA SA</h3>
+<p>Открытый криминальный мир</p>
+<button onclick="fav('GTA SA')">⭐ В избранное</button>
+<button onclick="like(this)">👍 <span class="likes">0</span></button>
+<button onclick="toggleDesc(this)">Описание</button>
+<p class="price">$19.99</p>
+<div class="description">
+Minecraft — это игра-песочница, где игрок может строить, добывать ресурсы,
+исследовать мир и сражаться с мобами.
+</div>
+</div>
+
+<div class="game" data-name="csgo">
+<img src="https://avatars.mds.yandex.net/i?id=147b71019831c278921520bcdbaddf9a_l-5870396-images-thumbs&n=13">
+<h3>CS GO</h3>
+<p>Онлайн шутер</p>
+<button onclick="fav('CS GO')">⭐ В избранное</button><button onclick="toggleDesc(this)">Описание</button>
+<button onclick="like(this)">👍 <span class="likes">0</span></button>
+<button onclick="buy('csgo')">Купить</button>
+<p class="price">$25.99</p>
+<div class="description">
+Minecraft — это игра-песочница, где игрок может строить, добывать ресурсы,
+исследовать мир и сражаться с мобами.
+</div>
+</div>
+
+<div class="game" data-name="fortnite">
+<img src="https://i.pinimg.com/originals/19/a7/a9/19a7a92b1c586cd62019b3e2066d8e18.jpg">
+<h3>Fortnite</h3>
+<p>Королевская битва</p>
+<button onclick="fav('Fortnite')">⭐ В избранное</button>
+<button onclick="toggleDesc(this)">Описание</button>
+<button onclick="buy('fortnite')">Купить</button>
+<p class="price">$29.99</p>
+<div class="description">
+Minecraft — это игра-песочница, где игрок может строить, добывать ресурсы,
+исследовать мир и сражаться с мобами.
+</div>
+</div>
+
+</div>
+</div>
+<div id="cookie-banner">
+    Мы используем cookie, чтобы улучшить работу сайта.
+    <button onclick="acceptCookies()">Принять</button>
+</div>
+
+<div class="rating">
+<button id="topBtn" onclick="topFunction()">⬆</button>
+<span onclick="rate(this,1)">⭐</span>
+<span onclick="rate(this,2)">⭐</span>
+<span onclick="rate(this,3)">⭐</span>
+<span onclick="rate(this,4)">⭐</span>
+<span onclick="rate(this,5)">⭐</span>
+
+</div>
+
+<footer>
+GameHub © 2026
+</footer>
+
+<script>
+
+function fav(game){
+    alert(game + " добавлена в избранное ⭐");
+}
+
+/* поиск */
+
+const search = document.getElementById("search");
+
+search.addEventListener("keyup",function(){
+
+let filter = search.value.toLowerCase();
+let games = document.querySelectorAll(".game");
+
+games.forEach(game=>{
+
+let name = game.dataset.name;
+
+if(name.includes(filter)){
+game.style.display="block";
+}else{
+game.style.display="none";
+}
+
+});
+
+});
+
+/* смена темы */
+
+function toggleTheme(){
+document.body.classList.toggle("light");
+}
+
+/* подтверждение 18+ */
+
+function acceptDisclaimer(){
+document.getElementById("disclaimer").style.display="none";
+}
+function toggleDesc(btn){
+    let desc = btn.parentElement.querySelector(".description");
+
+    if(desc.style.display === "block"){
+        desc.style.display = "none";
+    }else{
+        desc.style.display = "block"
+    }
+}
+function addComent(){
+    let input=document.getElementById("commentInput");
+    let text = input.value;
+
+    if(text==="") return;
+
+    let div = document.createElement("div");
+    div.className = "comment";
+    div.textContent = text;
+
+    document.getElementById("comments").appendChild("div");
+
+    input.value = "";
+}
+function like(btn){
+    let span = btn.querySelector(".likes");
+
+    let count = parseInt(span.textContent);
+
+    count++;
+    span.textContent = count;
+}
+function rate(star,value){
+    let starts = star.parentElement.querySelectorAll("span");
+
+ stars.forEach((s,i)=>{
+
+if(i < value){
+s.classList.add("active");
+}else{
+s.classList.remove("active");
+}
+
+});
+
+}
+const translations = {
+
+ru:{
+home:"Главная",
+games:"Игры",
+popular:"Популярное",
+search:"Поиск игры..."
+},
+
+en:{
+home:"Home",
+games:"Games",
+popular:"Popular",
+search:"Search game..."
+}
+
+};
+
+function setLang(lang){
+
+document.getElementById("home").textContent =
+translations[lang].home;
+
+document.getElementById("games").textContent =
+translations[lang].games;
+
+document.getElementById("popular").textContent =
+translations[lang].popular;
+
+document.getElementById("search").placeholder =
+translations[lang].search;
+
+}
+function buy(game){
+    alert("Вы купили " + game);
+}
+window.onscroll = function() {
+let btn = document.getElementById("topBtn");
+
+if(document.body.scrollTop > 200 || document.documentElement.scrollTop > 200){
+btn.style.display = "block";
+}else{
+btn.style.display = "none";
+}
+}
+
+function topFunction(){
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+}
+</script>
+
+</body>
+</html>
+улучшить сможешь
